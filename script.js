@@ -67,6 +67,9 @@ class App {
 
   constructor() {
     this._getPosition();
+
+    this._getLocalStorage();
+
     this._submitForm();
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -103,6 +106,8 @@ class App {
     //   .openPopup();
 
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(work => this._renderWorkoutMarker(work));
   }
 
   _showForm(mapE) {
@@ -180,6 +185,9 @@ class App {
 
     // Hide form and clear input fields
     this._hideForm();
+
+    //Set Local Storage
+    this._setLocalStorage();
   }
 
   _renderWorkoutMarker(workout) {
@@ -269,6 +277,27 @@ class App {
   _toggleElevationField() {
     inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+
+    if (!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+    });
+  }
+
+  reset(){
+    localStorage.removeItem('workouts')
+    location.reload();
   }
 }
 
